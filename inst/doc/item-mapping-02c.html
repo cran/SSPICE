@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Pierpaolo Massoli" />
+
+
+<title>02c — Item mapping: observed codes and routing codes</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">02c — Item mapping: observed codes and
+routing codes</h1>
+<h4 class="author">Pierpaolo Massoli</h4>
+
+
+
+<div id="purpose-and-place-in-the-workflow" class="section level1">
+<h1>Purpose and place in the workflow</h1>
+<p>A categorical variable may have three observed codes, such as
+<code>10</code>, <code>21</code> and <code>99</code>. These are three
+categories. The largest code is not the number of categories. SSPICE
+represents their outgoing transitions with three modal positions, while
+routing metadata describe an equidistant structural domain. Item mapping
+connects the observed codes to that domain.</p>
+<p>Read <a href="routing-02b.html">Building the routing file</a> first.
+This guide explains which codes belong in each input, how the
+correspondence is used, and how to check it before running the
+application pipeline. Its executable example uses synthetic records and
+a temporary CSV; it needs the patched SSPICE package, but no
+questionnaire data or external files.</p>
+</div>
+<div id="three-representations-of-the-same-category" class="section level1">
+<h1>Three representations of the same category</h1>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Meaning</th>
+<th align="right">Observed dataset code</th>
+<th align="right">Structural routing code</th>
+<th align="right">Dummy position</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">First category</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Second category</td>
+<td align="right">21</td>
+<td align="right">20</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">Third category</td>
+<td align="right">99</td>
+<td align="right">30</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<p>The mapping file is a comma-separated CSV with a header:</p>
+<pre class="text"><code>varname,item_route,item_dataset
+CHOICE,10,10
+CHOICE,20,21
+CHOICE,30,99</code></pre>
+<p>Each row pairs one routing code with one observed code <strong>for
+the variable named in that row</strong>. Keep this column order. Codes
+are numeric; use separate rows for each category and repeat the variable
+name. Different variables can reuse the same numeric codes.</p>
+<p>For this mapping, the beginning of the routing row is:</p>
+<pre class="text"><code>CHOICE;3;10;30;0;...</code></pre>
+<p>The fields declare the variable name, three modes, minimum structural
+code 10 and maximum structural code 30. The implied structural codes are
+<code>10, 20, 30</code>. The row <code>CHOICE;3;10;99;0;...</code> would
+instead imply <code>10, 54.5, 99</code>: it does not describe the
+mapping above. Do not use the observed minimum and maximum when they
+disagree with the chosen structural domain, and do not declare 99 modes
+merely because one observed code is 99.</p>
+<p>An equally valid choice is structural codes <code>1, 2, 3</code>. It
+requires mapping rows <code>(CHOICE,1,10)</code>,
+<code>(CHOICE,2,21)</code>, <code>(CHOICE,3,99)</code> and routing
+bounds 1 and 3. Either structural coding produces the same three dummy
+positions.</p>
+<p>For a structural domain with <code>n &gt; 1</code> modes, minimum
+<code>a</code> and maximum <code>b</code>, valid structural codes have
+step <code>(b - a)/(n - 1)</code>. After lookup, their dummy position is
+<code>1 + (item_route - a)/step</code>. A code of 20 in the first
+example therefore activates position 2, not position 20.</p>
+</div>
+<div id="which-codes-to-use-where" class="section level1">
+<h1>Which codes to use where</h1>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Input or output</th>
+<th align="left">Coding convention</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Questionnaire and donor records</td>
+<td align="left">Observed dataset codes</td>
+</tr>
+<tr class="even">
+<td align="left">Routing domain bounds and jump conditions</td>
+<td align="left">Structural routing codes</td>
+</tr>
+<tr class="odd">
+<td align="left">Mapping column 2, <code>item_route</code></td>
+<td align="left">Structural routing codes</td>
+</tr>
+<tr class="even">
+<td align="left">Mapping column 3, <code>item_dataset</code></td>
+<td align="left">Observed dataset codes</td>
+</tr>
+<tr class="odd">
+<td align="left">VAUX/LEDIT predicates on the mapped input variable</td>
+<td align="left">Observed dataset codes</td>
+</tr>
+<tr class="even">
+<td align="left">Corrected records and routing report values</td>
+<td align="left">Observed dataset codes</td>
+</tr>
+<tr class="odd">
+<td align="left">Generated RULES and VARDOM, when supplied with this
+mapping</td>
+<td align="left">Observed dataset codes</td>
+</tr>
+<tr class="even">
+<td align="left">Internal categorical dummy representation</td>
+<td align="left">Positions <code>1, ..., n</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>build_DAG()</code> receives routing metadata, not the mapping
+CSV. Thus the DAG must already specify structural domains and jumps
+consistently. <code>prepare_data()</code> does not apply this
+categorical mapping; its other normalizations, such as logical-group
+processing, are described in <a href="controlli-04.html">Data
+preparation and checks</a>.</p>
+<p>The canonical checker and correction oracle translate observed codes
+to routing codes in a working representation, then to dummy positions.
+They do not recode the input dataset or rewrite the routing table.
+Lookup uses the original value once. For example, observed codes
+<code>2, 3, 4</code> mapped to structural codes <code>1, 2, 3</code> do
+not trigger successive substitutions when the two sets overlap. Missing
+values remain missing and activate no categorical mode; whether a
+missing value is a violation depends on the routing path.</p>
+<p>The correction engine uses observed codes for mapped variable
+domains, donor values and proposed record values. It translates a
+proposed value when identifying an active predecessor or testing a jump.
+Explicit <code>domains</code> overrides and
+<code>imputation_priors</code> for a mapped variable must therefore also
+refer to its observed codes.</p>
+</div>
+<div id="a-jump-six-records-and-a-correction" class="section level1">
+<h1>A jump, six records, and a correction</h1>
+<p>Only the second category skips <code>DETAIL</code>. With structural
+codes <code>10, 20, 30</code>, the routing jump condition is
+<strong>20</strong>, although the corresponding observed value is
+<strong>21</strong>:</p>
+<pre class="text"><code>CHOICE;3;10;30;0;1;20;END</code></pre>
+<p>The example below checks an independently specified expectation:
+records 1–3 are correct; records 4 and 6 omit a required DETAIL, and
+record 5 fills DETAIL although it should be blank. Correction keeps
+CHOICE and END fixed and repairs DETAIL. The same experiment is run with
+both structural domains.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">local</span>({</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  folder <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="st">&quot;sspice-mapping-guide-&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">dir.create</span>(folder)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">unlink</span>(folder, <span class="at">recursive =</span> <span class="cn">TRUE</span>), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  mapping_file <span class="ot">&lt;-</span> <span class="fu">file.path</span>(folder, <span class="st">&quot;items_mapping.csv&quot;</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  observed <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">21</span>, <span class="dv">99</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  expected <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">c</span>(<span class="st">&quot;4|DETAIL|-1&quot;</span>, <span class="st">&quot;5|DETAIL|1&quot;</span>, <span class="st">&quot;6|DETAIL|-1&quot;</span>))</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="cf">for</span> (structural <span class="cf">in</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">30</span>), <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)) {</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    mapping <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>      <span class="at">varname =</span> <span class="st">&quot;CHOICE&quot;</span>, <span class="at">item_route =</span> structural,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>      <span class="at">item_dataset =</span> observed</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>    )</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a>    utils<span class="sc">::</span><span class="fu">write.csv</span>(mapping, mapping_file, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>    routes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>      <span class="at">V1 =</span> <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>, <span class="st">&quot;CHOICE&quot;</span>, <span class="st">&quot;DETAIL&quot;</span>, <span class="st">&quot;END&quot;</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>      <span class="at">V2 =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>      <span class="at">V3 =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">min</span>(structural), <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>      <span class="at">V4 =</span> <span class="fu">c</span>(<span class="dv">9999</span>, <span class="fu">max</span>(structural), <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>      <span class="at">V5 =</span> <span class="dv">0</span>, <span class="at">V6 =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>      <span class="at">V7 =</span> <span class="fu">c</span>(<span class="cn">NA</span>, structural[<span class="dv">2</span>], <span class="cn">NA</span>, <span class="cn">NA</span>),</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>      <span class="at">V8 =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="st">&quot;END&quot;</span>, <span class="cn">NA</span>, <span class="cn">NA</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>    )</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>    dag <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">build_DAG</span>(routes, <span class="at">analyze =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a>    original <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a>      <span class="at">ID =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">CHOICE =</span> <span class="fu">rep</span>(observed, <span class="dv">2</span>),</span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a>      <span class="at">DETAIL =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">1</span>, <span class="cn">NA</span>), <span class="at">END =</span> <span class="dv">1</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a>    )</span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a>    prepared <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">prepare_data</span>(original, dag)<span class="sc">$</span>data</span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a>    <span class="fu">stopifnot</span>(<span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(prepared<span class="sc">$</span>CHOICE, original<span class="sc">$</span>CHOICE)))</span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a>    checked <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">routing_check</span>(</span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a>      prepared, dag<span class="sc">$</span>routes_numeric, dag<span class="sc">$</span>Bt, <span class="st">&quot;ID&quot;</span>,</span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a>      <span class="fu">basename</span>(mapping_file), <span class="fu">dirname</span>(mapping_file)</span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a>    )</span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a>    report <span class="ot">&lt;-</span> checked<span class="sc">$</span>full_report</span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a>    keys <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">paste</span>(report<span class="sc">$</span>ID, report<span class="sc">$</span>varname_label,</span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a>                       report<span class="sc">$</span>errcode, <span class="at">sep =</span> <span class="st">&quot;|&quot;</span>))</span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a>    <span class="fu">stopifnot</span>(<span class="fu">identical</span>(keys, expected))</span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a>    <span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Structural codes:&quot;</span>, structural, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb4-42"><a href="#cb4-42" tabindex="-1"></a>    <span class="fu">print</span>(report[, <span class="fu">c</span>(<span class="st">&quot;ID&quot;</span>, <span class="st">&quot;varname_label&quot;</span>, <span class="st">&quot;errcode&quot;</span>, <span class="st">&quot;routeval&quot;</span>)])</span>
+<span id="cb4-43"><a href="#cb4-43" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" tabindex="-1"></a>    corrected <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">correct_data</span>(</span>
+<span id="cb4-45"><a href="#cb4-45" tabindex="-1"></a>      prepared[<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>, , <span class="at">drop =</span> <span class="cn">FALSE</span>], dag, <span class="at">record_id =</span> <span class="st">&quot;ID&quot;</span>,</span>
+<span id="cb4-46"><a href="#cb4-46" tabindex="-1"></a>      <span class="at">donor_data =</span> prepared[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, , <span class="at">drop =</span> <span class="cn">FALSE</span>],</span>
+<span id="cb4-47"><a href="#cb4-47" tabindex="-1"></a>      <span class="at">immutable_variables =</span> <span class="fu">c</span>(<span class="st">&quot;CHOICE&quot;</span>, <span class="st">&quot;END&quot;</span>),</span>
+<span id="cb4-48"><a href="#cb4-48" tabindex="-1"></a>      <span class="at">items_mapping_file =</span> mapping_file,</span>
+<span id="cb4-49"><a href="#cb4-49" tabindex="-1"></a>      <span class="at">control =</span> SSPICE<span class="sc">::</span><span class="fu">correction_control</span>(</span>
+<span id="cb4-50"><a href="#cb4-50" tabindex="-1"></a>        <span class="at">seed =</span> <span class="dv">123</span><span class="dt">L</span>, <span class="at">max_iterations =</span> <span class="dv">12</span><span class="dt">L</span>, <span class="at">use_parallel =</span> <span class="cn">FALSE</span></span>
+<span id="cb4-51"><a href="#cb4-51" tabindex="-1"></a>      )</span>
+<span id="cb4-52"><a href="#cb4-52" tabindex="-1"></a>    )</span>
+<span id="cb4-53"><a href="#cb4-53" tabindex="-1"></a>    <span class="fu">stopifnot</span>(</span>
+<span id="cb4-54"><a href="#cb4-54" tabindex="-1"></a>      <span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(corrected<span class="sc">$</span>corrected_data<span class="sc">$</span>DETAIL, <span class="fu">c</span>(<span class="dv">1</span>, <span class="cn">NA</span>, <span class="dv">1</span>))),</span>
+<span id="cb4-55"><a href="#cb4-55" tabindex="-1"></a>      <span class="fu">isTRUE</span>(<span class="fu">all.equal</span>(corrected<span class="sc">$</span>corrected_data<span class="sc">$</span>CHOICE, observed)),</span>
+<span id="cb4-56"><a href="#cb4-56" tabindex="-1"></a>      <span class="fu">all</span>(corrected<span class="sc">$</span>record_summary<span class="sc">$</span>resolved)</span>
+<span id="cb4-57"><a href="#cb4-57" tabindex="-1"></a>    )</span>
+<span id="cb4-58"><a href="#cb4-58" tabindex="-1"></a>    <span class="fu">print</span>(corrected<span class="sc">$</span>corrected_data)</span>
+<span id="cb4-59"><a href="#cb4-59" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" tabindex="-1"></a>    <span class="co"># These internal generators are also used by the operational scripts.</span></span>
+<span id="cb4-61"><a href="#cb4-61" tabindex="-1"></a>    <span class="co"># getFromNamespace is explicit: they are not exported public functions.</span></span>
+<span id="cb4-62"><a href="#cb4-62" tabindex="-1"></a>    rules <span class="ot">&lt;-</span> <span class="fu">getFromNamespace</span>(<span class="st">&quot;create_rules&quot;</span>, <span class="st">&quot;SSPICE&quot;</span>)(</span>
+<span id="cb4-63"><a href="#cb4-63" tabindex="-1"></a>      dag<span class="sc">$</span>Bt, dag<span class="sc">$</span>routes_numeric,</span>
+<span id="cb4-64"><a href="#cb4-64" tabindex="-1"></a>      <span class="fu">basename</span>(mapping_file), <span class="fu">dirname</span>(mapping_file)</span>
+<span id="cb4-65"><a href="#cb4-65" tabindex="-1"></a>    )</span>
+<span id="cb4-66"><a href="#cb4-66" tabindex="-1"></a>    expected_rules <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb4-67"><a href="#cb4-67" tabindex="-1"></a>      <span class="st">&quot;CHOICE(10) DETAIL&lt; )&quot;</span>,</span>
+<span id="cb4-68"><a href="#cb4-68" tabindex="-1"></a>      <span class="st">&quot;CHOICE(21) DETAIL() END&lt; )&quot;</span>,</span>
+<span id="cb4-69"><a href="#cb4-69" tabindex="-1"></a>      <span class="st">&quot;CHOICE(99) DETAIL&lt; )&quot;</span></span>
+<span id="cb4-70"><a href="#cb4-70" tabindex="-1"></a>    )</span>
+<span id="cb4-71"><a href="#cb4-71" tabindex="-1"></a>    <span class="fu">stopifnot</span>(<span class="fu">setequal</span>(rules[<span class="fu">startsWith</span>(rules, <span class="st">&quot;CHOICE(&quot;</span>)], expected_rules))</span>
+<span id="cb4-72"><a href="#cb4-72" tabindex="-1"></a>    <span class="fu">print</span>(rules[<span class="fu">startsWith</span>(rules, <span class="st">&quot;CHOICE(&quot;</span>)])</span>
+<span id="cb4-73"><a href="#cb4-73" tabindex="-1"></a>    vardom <span class="ot">&lt;-</span> <span class="fu">getFromNamespace</span>(<span class="st">&quot;create_vardom&quot;</span>, <span class="st">&quot;SSPICE&quot;</span>)(</span>
+<span id="cb4-74"><a href="#cb4-74" tabindex="-1"></a>      dag<span class="sc">$</span>routes_numeric, dag<span class="sc">$</span>Bt,</span>
+<span id="cb4-75"><a href="#cb4-75" tabindex="-1"></a>      <span class="fu">basename</span>(mapping_file), <span class="fu">dirname</span>(mapping_file)</span>
+<span id="cb4-76"><a href="#cb4-76" tabindex="-1"></a>    )<span class="sc">$</span>vardom</span>
+<span id="cb4-77"><a href="#cb4-77" tabindex="-1"></a>    choice_domain <span class="ot">&lt;-</span> vardom[vardom<span class="sc">$</span>varname <span class="sc">==</span> <span class="st">&quot;CHOICE&quot;</span>, , drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb4-78"><a href="#cb4-78" tabindex="-1"></a>    <span class="fu">stopifnot</span>(<span class="fu">identical</span>(<span class="fu">as.character</span>(choice_domain<span class="sc">$</span>intervalli),</span>
+<span id="cb4-79"><a href="#cb4-79" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="fu">sprintf</span>(<span class="st">&quot;%04d%04d&quot;</span>, observed, observed), <span class="at">collapse =</span> <span class="st">&quot;&quot;</span>)))</span>
+<span id="cb4-80"><a href="#cb4-80" tabindex="-1"></a>    <span class="fu">print</span>(choice_domain)</span>
+<span id="cb4-81"><a href="#cb4-81" tabindex="-1"></a>  }</span>
+<span id="cb4-82"><a href="#cb4-82" tabindex="-1"></a>})</span>
+<span id="cb4-83"><a href="#cb4-83" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-84"><a href="#cb4-84" tabindex="-1"></a><span class="co">#&gt; Structural codes: 10 20 30 </span></span>
+<span id="cb4-85"><a href="#cb4-85" tabindex="-1"></a><span class="co">#&gt;   ID varname_label errcode routeval</span></span>
+<span id="cb4-86"><a href="#cb4-86" tabindex="-1"></a><span class="co">#&gt; 1  4        DETAIL      -1       10</span></span>
+<span id="cb4-87"><a href="#cb4-87" tabindex="-1"></a><span class="co">#&gt; 2  5        DETAIL       1       21</span></span>
+<span id="cb4-88"><a href="#cb4-88" tabindex="-1"></a><span class="co">#&gt; 3  6        DETAIL      -1       99</span></span>
+<span id="cb4-89"><a href="#cb4-89" tabindex="-1"></a><span class="co">#&gt; SSPICE correction batch 1/1 completed (3 records).</span></span>
+<span id="cb4-90"><a href="#cb4-90" tabindex="-1"></a><span class="co">#&gt;   ID CHOICE DETAIL </span><span class="re">END</span></span>
+<span id="cb4-91"><a href="#cb4-91" tabindex="-1"></a><span class="co">#&gt; 4  4     10      1   1</span></span>
+<span id="cb4-92"><a href="#cb4-92" tabindex="-1"></a><span class="co">#&gt; 5  5     21     NA   1</span></span>
+<span id="cb4-93"><a href="#cb4-93" tabindex="-1"></a><span class="co">#&gt; 6  6     99      1   1</span></span>
+<span id="cb4-94"><a href="#cb4-94" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CHOICE(10) DETAIL&lt; )&quot;       &quot;CHOICE(21) DETAIL() </span><span class="re">END</span><span class="co">&lt; )&quot;</span></span>
+<span id="cb4-95"><a href="#cb4-95" tabindex="-1"></a><span class="co">#&gt; [3] &quot;CHOICE(99) DETAIL&lt; )&quot;      </span></span>
+<span id="cb4-96"><a href="#cb4-96" tabindex="-1"></a><span class="co">#&gt;   varname minitem maxitem               intervalli blank_allowed blank_implicit</span></span>
+<span id="cb4-97"><a href="#cb4-97" tabindex="-1"></a><span class="co">#&gt; 2  CHOICE       0       0 001000100021002100990099             0              0</span></span>
+<span id="cb4-98"><a href="#cb4-98" tabindex="-1"></a><span class="co">#&gt;   pos_i len_var                                     record</span></span>
+<span id="cb4-99"><a href="#cb4-99" tabindex="-1"></a><span class="co">#&gt; 2     5       2 CHOICE    00000000001000100021002100990099</span></span>
+<span id="cb4-100"><a href="#cb4-100" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-101"><a href="#cb4-101" tabindex="-1"></a><span class="co">#&gt; Structural codes: 1 2 3 </span></span>
+<span id="cb4-102"><a href="#cb4-102" tabindex="-1"></a><span class="co">#&gt;   ID varname_label errcode routeval</span></span>
+<span id="cb4-103"><a href="#cb4-103" tabindex="-1"></a><span class="co">#&gt; 1  4        DETAIL      -1       10</span></span>
+<span id="cb4-104"><a href="#cb4-104" tabindex="-1"></a><span class="co">#&gt; 2  5        DETAIL       1       21</span></span>
+<span id="cb4-105"><a href="#cb4-105" tabindex="-1"></a><span class="co">#&gt; 3  6        DETAIL      -1       99</span></span>
+<span id="cb4-106"><a href="#cb4-106" tabindex="-1"></a><span class="co">#&gt; SSPICE correction batch 1/1 completed (3 records).</span></span>
+<span id="cb4-107"><a href="#cb4-107" tabindex="-1"></a><span class="co">#&gt;   ID CHOICE DETAIL </span><span class="re">END</span></span>
+<span id="cb4-108"><a href="#cb4-108" tabindex="-1"></a><span class="co">#&gt; 4  4     10      1   1</span></span>
+<span id="cb4-109"><a href="#cb4-109" tabindex="-1"></a><span class="co">#&gt; 5  5     21     NA   1</span></span>
+<span id="cb4-110"><a href="#cb4-110" tabindex="-1"></a><span class="co">#&gt; 6  6     99      1   1</span></span>
+<span id="cb4-111"><a href="#cb4-111" tabindex="-1"></a><span class="co">#&gt; [1] &quot;CHOICE(10) DETAIL&lt; )&quot;       &quot;CHOICE(21) DETAIL() </span><span class="re">END</span><span class="co">&lt; )&quot;</span></span>
+<span id="cb4-112"><a href="#cb4-112" tabindex="-1"></a><span class="co">#&gt; [3] &quot;CHOICE(99) DETAIL&lt; )&quot;      </span></span>
+<span id="cb4-113"><a href="#cb4-113" tabindex="-1"></a><span class="co">#&gt;   varname minitem maxitem               intervalli blank_allowed blank_implicit</span></span>
+<span id="cb4-114"><a href="#cb4-114" tabindex="-1"></a><span class="co">#&gt; 2  CHOICE       0       0 001000100021002100990099             0              0</span></span>
+<span id="cb4-115"><a href="#cb4-115" tabindex="-1"></a><span class="co">#&gt;   pos_i len_var                                     record</span></span>
+<span id="cb4-116"><a href="#cb4-116" tabindex="-1"></a><span class="co">#&gt; 2     5       2 CHOICE    00000000001000100021002100990099</span></span></code></pre></div>
+<p><code>routeval</code> in the error report refers to the observed
+value of the variable responsible for the transition. In the record that
+incorrectly fills DETAIL under the second category, this value is 21.
+The generated rule also refers to <code>CHOICE(21)</code>. Mapping is an
+internal correspondence, not a request to rewrite the questionnaire
+records with codes 1–3 or 10–30.</p>
+</div>
+<div id="vaux-and-ledit-retain-the-meaning-of-the-original-values" class="section level1">
+<h1>VAUX and LEDIT retain the meaning of the original values</h1>
+<p>A predicate referring to the second observed category of CHOICE must
+test <code>CHOICE = 21</code>. Writing <code>CHOICE = 20</code> would
+test a different observed value; the mapping file does not automatically
+rewrite VAUX or LEDIT statements. Likewise, a sum or other arithmetic
+expression involving CHOICE uses its observed values. Mapping category
+labels does not redefine arithmetic.</p>
+<p>VAUX and LEDIT are evaluated on the records using their own metadata.
+Their resulting variables have their own domains and routing nodes. A
+mapping for CHOICE does not implicitly map a derived VAUX or LEDIT
+variable. For example, a VAUX may assign category 1 when CHOICE is 21
+and category 2 when CHOICE is 10 or 99; those output codes belong to the
+VAUX variable.</p>
+<p>The regression script <code>scripts/13_verify_item_mapping.R</code>
+includes matched VAUX and LEDIT examples in observed and normalized
+coding. The comparison translates the predicates as well as the data. It
+also tests routing, correction, exports, missing values and overlapping
+codes. See <a href="metadati-02.html">Metadata and external sources</a>
+for the statement format, assignment order and missing-operand rules;
+mapping does not change them.</p>
+</div>
+<div id="the-bundled-fase-variable" class="section level1">
+<h1>The bundled FASE variable</h1>
+<p>FASE is a categorical variable with ten observed modalities. The
+bundled mapping specifies:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Observed FASE</th>
+<th align="right">Structural code</th>
+<th align="right">Dummy position</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="right">21</td>
+<td align="right">30</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="right">25</td>
+<td align="right">40</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="right">50</td>
+<td align="right">50</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="right">55</td>
+<td align="right">60</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="right">60</td>
+<td align="right">70</td>
+<td align="right">7</td>
+</tr>
+<tr class="even">
+<td align="right">70</td>
+<td align="right">80</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="right">80</td>
+<td align="right">90</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="right">100</td>
+<td align="right">100</td>
+<td align="right">10</td>
+</tr>
+</tbody>
+</table>
+<p>Its structural declaration starts with <code>FASE;10;10;100</code>.
+The verification script checks all ten positions in both the canonical
+checker and the correction oracle. This is a controlled encoding test,
+not a rerun of correction on the application dataset. The separate
+CHOICE example tests a category-dependent jump, which an encoding-only
+example cannot establish.</p>
+</div>
+<div id="supplying-the-file-consistently" class="section level1">
+<h1>Supplying the file consistently</h1>
+<p>For the project scripts, set <code>config$items_mapping_file</code>
+in <code>scripts/00_config.R</code>. The working example path is
+<code>data-raw/metadata/items_mapping.csv</code>; the packaged copy is
+under <code>inst/extdata/SSPICE/metadata/</code>. Editing one copy does
+not update the other. Check that the workflow is reading the intended
+file.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Function or workflow</th>
+<th align="left">Mapping input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>build_DAG()</code></td>
+<td align="left">None; routing metadata already use structural
+codes</td>
+</tr>
+<tr class="even">
+<td align="left"><code>prepare_data()</code></td>
+<td align="left">No categorical recoding through this CSV</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>routing_check()</code></td>
+<td align="left"><code>items.maps = basename(file)</code>,
+<code>path.items.maps = dirname(file)</code></td>
+</tr>
+<tr class="even">
+<td align="left"><code>correct_data()</code></td>
+<td align="left"><code>items_mapping_file = file</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Step 04, RULES/VARDOM generation</td>
+<td align="left">The same mapping supplied to the generators</td>
+</tr>
+<tr class="even">
+<td align="left">VAUX/LEDIT evaluation</td>
+<td align="left">Predicates already use observed codes; no implicit
+predicate translation</td>
+</tr>
+</tbody>
+</table>
+<p>For a workflow without recoding, a CSV containing only
+<code>varname,item_route,item_dataset</code> is a consistent way to
+supply an empty mapping, including to functions that expect a file.
+Unmapped categorical variables still need codes consistent with their
+structural domains.</p>
+</div>
+<div id="validation-and-common-mistakes" class="section level1">
+<h1>Validation and common mistakes</h1>
+<p>For each mapped variable in the DAG, the patched checker requires a
+complete one-to-one correspondence with the structural domain. The
+shared encoding validates the first three columns, numeric codes, unique
+codes on each side, and agreement with the declared number of modes and
+structural bounds. A valid file may include mappings for variables
+outside a particular DAG; those variables are not encoded by that
+DAG.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Symptom or mistake</th>
+<th align="left">What to check</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mapping file not found</td>
+<td align="left">Full path, or the filename/directory pair supplied to
+the checker</td>
+</tr>
+<tr class="even">
+<td align="left">Duplicate codes</td>
+<td align="left">Each observed code and structural code must occur once
+per mapped variable</td>
+</tr>
+<tr class="odd">
+<td align="left">Routing domain disagreement</td>
+<td align="left">Complete mapping; number of modes; structural minimum,
+maximum and spacing</td>
+</tr>
+<tr class="even">
+<td align="left">Observed code absent from mapping</td>
+<td align="left">Input values and missing-value conventions; add a
+legitimate category consistently to routing and mapping</td>
+</tr>
+<tr class="odd">
+<td align="left">Jump follows the wrong category</td>
+<td align="left">Jump conditions must use structural codes, not
+irregular observed codes</td>
+</tr>
+<tr class="even">
+<td align="left">VAUX/LEDIT predicate does not match</td>
+<td align="left">Predicates must use observed values; mapping does not
+rewrite statements</td>
+</tr>
+<tr class="odd">
+<td align="left">A mapping seems to be ignored</td>
+<td align="left">Exact variable name, active file path, and mapping
+supplied to the function</td>
+</tr>
+</tbody>
+</table>
+<p>Use actual <code>NA</code> for missing data. A numeric sentinel such
+as 99 remains an observed category when it is declared as one; it is not
+automatically missing. Do not recode the input data yourself and then
+pass a mapping that expects the original codes: overlapping values make
+such double conversion ambiguous.</p>
+<p>The validation above is not a universal data-domain check. In
+particular, the existing scaling convention for unmapped categories is
+not a guarantee that every out-of-domain numeric value is rejected. This
+guide concerns numeric categorical mappings; string fields, quantitative
+presence states and OR/XOR normalization follow the separate routing
+conventions.</p>
+<p>When the mapping or routing specification changes, regenerate
+dependent artifacts and recheck records with the updated inputs before
+interpreting correction results. The mapping patch invalidates the
+earlier cache schema and correction checkpoint fingerprint; that does
+not recompute or validate previously exported results automatically.</p>
+<p>From the source-project root, run:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;scripts/13_verify_item_mapping.R&quot;</span>)</span></code></pre></div>
+<p>Read <a href="regole-05.html">Domains and rules</a> and <a href="correzione-06.html">Record correction</a> for the next workflow
+steps.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

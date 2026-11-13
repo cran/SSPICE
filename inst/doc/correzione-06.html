@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Pierpaolo Massoli" />
+
+
+<title>06 — Record correction</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">06 — Record correction</h1>
+<h4 class="author">Pierpaolo Massoli</h4>
+
+
+
+<blockquote>
+<p>Operational examples assume that the SSPICE project root is the
+working directory. Operational chunks are not executed when building the
+vignette because they require the project data. Standalone chunks
+explicitly marked <code>eval=TRUE</code> are exceptions.</p>
+</blockquote>
+<div id="extended-dag-and-initial-partition" class="section level1">
+<h1>Extended DAG and initial partition</h1>
+<p>Step 09 inserts logical-edit nodes into the DAG and prepares the
+corresponding data. Step 10 checks the records and partitions them once
+into <code>EXACT</code> and <code>ERRONEOUS</code> records. Exact
+records remain unchanged and form the donor pool. Correction operates on
+records that were initially erroneous; a pilot limit is applied after
+partitioning.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;09_build_extended_DAG.R&quot;</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;10_correct_data.R&quot;</span>))</span></code></pre></div>
+</div>
+<div id="configuring-a-pilot" class="section level1">
+<h1>Configuring a pilot</h1>
+<p>In the project, <code>correction_strata = &quot;STRATUM&quot;</code>,
+<code>correction_record_limit = 100L</code> and
+<code>correction_output_dir</code> configure the example pilot.
+<code>correction_control_args</code> includes temperature, penalties,
+minimum donor counts, seed, <code>use_parallel</code> and
+<code>parallel_workers</code>. Set these options in
+<code>scripts/00_config.R</code> before Step 10. Parallel work is
+distributed by record; check the effective worker count in the execution
+summary.</p>
+<p>Conditional distributions are precomputed from exact donors by
+stratum and immediate predecessor. Missing predecessors are handled
+using the appropriate pool of exact donors. Distinguish immutable
+variables (the identifier, user-specified variables, and strata when
+<code>freeze_strata = TRUE</code>) from variables whose category is
+locked. An active exogenous auxiliary variable retains its original
+category, whereas an inactive one may become <code>NA</code>. Logical
+groups have their own structural treatment; they are not generally
+synonymous with immutable columns.</p>
+</div>
+<div id="correction-with-mapped-categories" class="section level1">
+<h1>Correction with mapped categories</h1>
+<p>Supply the same <code>items_mapping_file</code> used for checking and
+export. Mapped variable domains and proposed values use observed dataset
+codes; the engine translates them when evaluating modal positions and
+jumps. Custom <code>domains</code> and <code>imputation_priors</code>
+for these variables must also use observed codes. Keep donor records in
+the same coding as the records to be corrected.</p>
+<p>The <a href="item-mapping-02c.html">Item mapping</a> guide
+demonstrates correction with an irregularly coded variable held fixed.
+The mapping regression suite also tests filling a mapped variable while
+preserving its observed-code domain. VAUX/LEDIT predicates continue to
+refer to observed values.</p>
+</div>
+<div id="outputs-and-diagnosis" class="section level1">
+<h1>Outputs and diagnosis</h1>
+<p>Step 10 saves <code>correction_result.rds</code>,
+<code>corrected_questionnaire_data.rds</code> and CSV summaries in the
+configured directory. Distinguish corrected records from unresolved
+records and retain their link to the original row and identifier.
+Persistent logical-edit violations require diagnosis and appear in the
+quality assessment.</p>
+</div>
+<div id="full-runs-batches-and-workers" class="section level1">
+<h1>Full runs, batches and workers</h1>
+<p>The example below uses the original extended inputs, not a dataset
+corrected by an earlier run. Execute it from the PROJECT root after the
+required steps. Use an output directory distinct from those of other
+experiments.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>run <span class="ot">&lt;-</span> <span class="fu">new.env</span>(<span class="at">parent =</span> <span class="fu">globalenv</span>())</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">sys.source</span>(<span class="st">&quot;scripts/00_config.R&quot;</span>, <span class="at">envir =</span> run)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_record_limit <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_strata <span class="ot">&lt;-</span> <span class="st">&quot;STRATUM&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_batch_size <span class="ot">&lt;-</span> <span class="dv">100</span><span class="dt">L</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_resume_batches <span class="ot">&lt;-</span> <span class="cn">FALSE</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_cache_policy <span class="ot">&lt;-</span> <span class="st">&quot;auto&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_control_args<span class="sc">$</span>freeze_strata <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_control_args<span class="sc">$</span>use_parallel <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_control_args<span class="sc">$</span>parallel_workers <span class="ot">&lt;-</span> <span class="dv">6</span><span class="dt">L</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_output_dir <span class="ot">&lt;-</span> <span class="st">&quot;output/corrected-full-STRATUM&quot;</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">dir.exists</span>(run<span class="sc">$</span>config<span class="sc">$</span>correction_output_dir))</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="fu">sys.source</span>(<span class="st">&quot;scripts/10_correct_data.R&quot;</span>, <span class="at">envir =</span> run)</span></code></pre></div>
+<p><code>Inf</code> selects all initially erroneous records. Initially
+exact records remain donors and must not be corrected again. A batch of
+100 is the checkpoint unit; parallel work is distributed by record. The
+batch message appears on completion, not at startup. Before the first
+message, processing may include reading inputs, the initial check, donor
+preparation, worker startup and correction of the first batch.</p>
+<p>The initial routing-check cache and batch checkpoints are separate.
+<code>correction_cache_policy = &quot;auto&quot;</code> allows reuse of a valid
+initial check; it does not mean reusing a previous correction. To resume
+interrupted batches, use the same directory and
+<code>correction_resume_batches = TRUE</code>, keeping inputs and
+settings compatible. Do not enable resumption to compare FPROV and
+STRATUM in the same directory. Always inspect the cache reason,
+reused-batch count and effective worker count in the summary.</p>
+<p>To freeze FPROV as well when STRATUM is the stratification variable,
+include it explicitly in <code>correction_immutable_variables</code>. A
+variable’s statistical role is separate from its immutable status. For a
+comparison that isolates the effect of stratification alone, keep the
+set of immutable variables the same in both runs.</p>
+<!-- SSPICE-STRATUM-CODES-BEGIN -->
+<div id="territorial-stratum-codes" class="section level2">
+<h2>Territorial stratum codes</h2>
+<p>In the supplied example, STRATUM identifies five geographical
+divisions of Italy: North-West (1), North-East (2), Centre (3), South
+(4), and Islands (5). It is used for stratification during correction.
+With freeze_strata = TRUE, stratum membership remains unchanged.
+<!-- SSPICE-STRATUM-CODES-END --></p>
+<!-- SSPICE-STARTUP-NOTE-BEGIN -->
+</div>
+<div id="preparation-before-the-first-batch" class="section level2">
+<h2>Preparation before the first batch</h2>
+<p>Before record correction begins, SSPICE prepares or reuses
+conditional distributions, donor information, variable domains and other
+supporting structures. Parallel execution also requires worker
+initialization. Step 10 performs an initial routing check unless a valid
+cached result is available.</p>
+<p>Preparation time depends on the number of variables and records, the
+number of categories and strata, and the routing structure. Computing
+conditional distributions can take appreciable time before the first
+batch starts.</p>
+<p>The first batch-completion message appears only after preparation and
+processing of that batch. A delay before this message does not by itself
+indicate that execution has stalled.</p>
+<p>Distinguish total script elapsed time from the correction time
+reported in the output. Their difference is not a complete measure of
+initialization time, because some preparation may occur within the timed
+correction call. Measuring individual preparation stages requires
+separate timing. <!-- SSPICE-STARTUP-NOTE-END --></p>
+</div>
+</div>
+<div id="controls-and-returned-objects" class="section level1">
+<h1>Controls and returned objects</h1>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Control</th>
+<th align="left">Default and meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>max_iterations = NULL</code></td>
+<td align="left">One iteration per DAG node as the record-specific
+maximum; termination may occur sooner</td>
+</tr>
+<tr class="even">
+<td align="left"><code>initial_temperature = NULL</code></td>
+<td align="left">Maximum of the final temperature, the floored initial
+constraint score, and
+<code>lambda_change * max(penalty_fill, penalty_blank, penalty_flip)</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>final_temperature = 1e-4</code></td>
+<td align="left">Positive temperature used after cooling</td>
+</tr>
+<tr class="even">
+<td align="left"><code>cooling_fraction = 0.9</code></td>
+<td align="left">Fraction of iterations used for linear cooling</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>use_parallel = FALSE</code></td>
+<td align="left">Sequential execution unless explicitly enabled</td>
+</tr>
+<tr class="even">
+<td align="left"><code>parallel_workers = NULL</code></td>
+<td align="left">Automatic worker choice when parallel execution is
+enabled, capped by record count</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>beta_fill = 1</code></td>
+<td align="left">Retained compatibility control; stored and validated
+but not consumed by the supplied proposal code</td>
+</tr>
+</tbody>
+</table>
+<p><code>beta_fill</code> is retained for compatibility; changing it
+does not alter proposals in this source version.</p>
+<p>The default maximum iteration count is a computational budget, not a
+guarantee of feasibility or global minimum change. Increasing it can
+increase run time. Keep diagnostic weights positive when interpreting
+zero weighted violations as logical feasibility; zero weights can hide
+their corresponding terms.</p>
+<p><code>correct_data()</code> returns a list with class
+<code>sspice_correction_result</code>:</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Component</th>
+<th align="left">Use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>corrected_data</code></td>
+<td align="left">Corrected rows in the prepared representation</td>
+</tr>
+<tr class="even">
+<td align="left"><code>record_summary</code></td>
+<td align="left">Per-record status and diagnostics; inspect
+<code>resolved</code></td>
+</tr>
+<tr class="odd">
+<td align="left"><code>unresolved_records</code></td>
+<td align="left">Subset of the summary for unresolved records</td>
+</tr>
+<tr class="even">
+<td align="left"><code>final_routing_check</code></td>
+<td align="left">Final record/variable violation reports</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>donor_diagnostics</code></td>
+<td align="left">Counts of supplied and retained donors</td>
+</tr>
+<tr class="even">
+<td align="left"><code>control</code>, <code>strata</code>,
+<code>immutable_variables</code></td>
+<td align="left">Effective correction settings</td>
+</tr>
+<tr class="odd">
+<td align="left"><code>parallel</code>, <code>batch_manifest</code></td>
+<td align="left">Workers, batches and checkpoint reuse</td>
+</tr>
+</tbody>
+</table>
+<p>Step 10 performs the initial EXACT/ERRONEOUS split and applies the
+pilot limit. Calling <code>correct_data()</code> directly does not
+reproduce that script-level selection automatically. Its
+<code>corrected_data</code> corresponds to the rows passed to the
+function; Step 10 writes the reconstructed questionnaire output.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

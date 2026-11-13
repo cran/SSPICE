@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Pierpaolo Massoli" />
+
+
+<title>07 — Correction reports and quality assessment</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">07 — Correction reports and quality
+assessment</h1>
+<h4 class="author">Pierpaolo Massoli</h4>
+
+
+
+<blockquote>
+<p>Operational examples assume that the SSPICE project root is the
+working directory. Operational chunks are not executed when building the
+vignette because they require the project data. Standalone chunks
+explicitly marked <code>eval=TRUE</code> are exceptions.</p>
+</blockquote>
+<div id="why-assess-the-result" class="section level1">
+<h1>Why assess the result?</h1>
+<p>Algorithm termination does not imply that all records are correct.
+Step 11 compares original and corrected data, uses the final
+extended-DAG routing check stored in the correction result, and produces
+a quality report. It also uses the initial check, exact donor records,
+elapsed time and donor provenance when available.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;11_correction_quality_report.R&quot;</span>))</span></code></pre></div>
+<p>The script reads <code>correction_result.rds</code> and
+<code>corrected_questionnaire_data.rds</code> from Step 10, together
+with <code>prepared_data_with_logical_edits.rds</code> and
+<code>questionnaire_extended_DAG.rds</code> from Step 09. It produces
+<code>correction_quality_report.rds</code>, an HTML report and CSV
+tables in <code>correction_quality_output_dir</code>, or in the
+<code>quality-report</code> subdirectory of the correction output
+directory.</p>
+</div>
+<div id="reading-the-report" class="section level1">
+<h1>Reading the report</h1>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Question</th>
+<th align="left">Evidence to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">How many records are resolved?</td>
+<td align="left">Record summary, separating resolved and unresolved
+cases</td>
+</tr>
+<tr class="even">
+<td align="left">Do any violations remain?</td>
+<td align="left">Initial and final reports by record and variable</td>
+</tr>
+<tr class="odd">
+<td align="left">Which values changed?</td>
+<td align="left">Change tables and breakdown by change type</td>
+</tr>
+<tr class="even">
+<td align="left">Were donors admissible?</td>
+<td align="left">Provenance and diagnostics of the EXACT pool</td>
+</tr>
+<tr class="odd">
+<td align="left">Were constrained variables respected?</td>
+<td align="left">Audit of immutable variables and exogenous auxiliary
+variables</td>
+</tr>
+<tr class="even">
+<td align="left">What is the computational cost?</td>
+<td align="left">Elapsed time and execution summary</td>
+</tr>
+</tbody>
+</table>
+<p>Assess the resolution rate separately from persistent errors. A
+record may remain unresolved; do not classify it as corrected merely
+because a value changed. Retain complete outputs and pilot settings to
+reproduce comparisons.</p>
+</div>
+<div id="selecting-the-result-to-assess" class="section level1">
+<h1>Selecting the result to assess</h1>
+<p>Step 11 must not inadvertently use the default pilot directory after
+a run was saved elsewhere. Use the same output directory as Step 10 and
+the same original extended data. Run this example from the project
+root:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>pkgload<span class="sc">::</span><span class="fu">load_all</span>(<span class="st">&quot;.&quot;</span>, <span class="at">export_all =</span> <span class="cn">FALSE</span>, <span class="at">helpers =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>run <span class="ot">&lt;-</span> <span class="fu">new.env</span>(<span class="at">parent =</span> <span class="fu">globalenv</span>())</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">sys.source</span>(<span class="st">&quot;scripts/00_config.R&quot;</span>, <span class="at">envir =</span> run)</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_output_dir <span class="ot">&lt;-</span> <span class="st">&quot;output/corrected-full-STRATUM&quot;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>run<span class="sc">$</span>config<span class="sc">$</span>correction_quality_output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  run<span class="sc">$</span>config<span class="sc">$</span>correction_output_dir, <span class="st">&quot;quality-report&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>run<span class="sc">$</span>correction_quality_report <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span>correction_quality_report</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>run<span class="sc">$</span><span class="st">`</span><span class="at">%||%</span><span class="st">`</span> <span class="ot">&lt;-</span> <span class="cf">function</span>(x, y) <span class="cf">if</span> (<span class="fu">is.null</span>(x)) y <span class="cf">else</span> x</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="fu">sys.source</span>(<span class="st">&quot;scripts/11_correction_quality_report.R&quot;</span>, <span class="at">envir =</span> run)</span></code></pre></div>
+<p>The function uses <code>final_check</code> when supplied, otherwise
+<code>correction_result$final_routing_check</code>. It does not
+automatically run a new, independent validation of the final dataset.
+The script may, however, recompute the initial check if neither a
+configured nor a saved check is found.</p>
+</div>
+<div id="interpreting-the-counts" class="section level1">
+<h1>Interpreting the counts</h1>
+<p><code>records_resolved</code> measures constraint resolution, not the
+statistical accuracy of imputation relative to unknown true values.
+<code>records_changed</code> includes modified records even if they
+remain unresolved. <code>fills</code>, <code>blanks</code> and
+<code>mode_changes</code> distinguish missing-to-value, value-to-missing
+and value-to-different-value transitions, respectively. The percentage
+of changed cells uses the <code>editable_cells</code> denominator
+calculated by the report, not all cells in the original
+questionnaire.</p>
+<p>Quantitative/qualitative classifications are inferred from routing
+metadata and the classes of the prepared columns. Text may already have
+been converted to indicators: <code>string_variables = 0</code> does not
+show that the original questionnaire contained no open-ended questions.
+A numeric identifier can be classified as quantitative while retaining
+the separate RECORD_ID role.</p>
+<p>When comparing runs, retain inputs, seed, controls, donors and
+immutable variables. Changing the stratification variable with
+<code>freeze_strata = TRUE</code> also changes the automatically frozen
+variable. Similar change counts do not imply identical imputed values.
+Compare correction time separately from total elapsed time and cache
+reuse.</p>
+<p>The five STRATUM codes are listed in <a href="correzione-06.html">Record correction</a>.</p>
+</div>
+<div id="denominator-and-post-hoc-uncertainty" class="section level1">
+<h1>Denominator and post-hoc uncertainty</h1>
+<p><code>editable_cells</code> equals the number of distinct processed
+record identifiers multiplied by the number of columns whose role is not
+RECORD_ID and whose <code>immutable</code> flag is false in
+<code>variable_profile</code>. It is not restricted to active questions
+or base variables: derived or mode-locked columns can enter unless
+marked immutable. <code>changed_cell_percentage</code> is 100 *
+cells_changed / editable_cells; a zero denominator produces NA. Use the
+same variable representation and immutable settings in comparisons.</p>
+<p>For a changed qualitative BASE variable that was not blanked, and
+when donor data are supplied, the report reconstructs a distribution at
+the final corrected record. <code>selected_probability</code> is the
+mass of the chosen value; <code>entropy</code> is -sum(p * log(p)) using
+natural logarithms. Normalized entropy divides by log(K), where K is the
+positive-probability support size, and is zero when K &lt;= 1. These are
+post-hoc distribution summaries, not confidence intervals, correctness
+probabilities or the logged probabilities of the actual correction
+proposals. The reconstruction does not restore supplied user priors or
+domain overrides, so do not interpret it as an exact replay of runs
+using those settings. Inspect <code>status</code> and
+<code>distribution_source</code>.</p>
+<p>Quantitative changes receive structural-action labels instead of
+categorical entropy. <code>NOT_APPLICABLE</code> and unavailable
+distributions are not zero uncertainty.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

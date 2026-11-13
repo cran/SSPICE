@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Pierpaolo Massoli" />
+
+
+<title>01 — SSPICE overview and workflow</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">01 — SSPICE overview and workflow</h1>
+<h4 class="author">Pierpaolo Massoli</h4>
+
+
+
+<blockquote>
+<p>Operational examples assume that the SSPICE project root is the
+working directory. Operational chunks are not executed when building the
+vignette because they require the project data. Standalone chunks
+explicitly marked <code>eval=TRUE</code> are exceptions.</p>
+</blockquote>
+<div id="why-sspice" class="section level1">
+<h1>Why SSPICE</h1>
+<p>SSPICE stands for <strong>Systematic Skip-Pattern Integrity and
+Consistency Engine</strong>.</p>
+<p>SSPICE represents the logical dependencies of a questionnaire using a
+directed acyclic graph (DAG). It uses this graph to check response
+paths, localize inconsistencies, construct domains and formal rules,
+correct erroneous records, and assess the results. Missing values have a
+structural meaning: an inactive question must be blank, whereas an
+active question may require a response.</p>
+</div>
+<div id="operational-workflow" class="section level1">
+<h1>Operational workflow</h1>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Stage</th>
+<th align="left">Main input</th>
+<th align="left">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">01</td>
+<td align="left">Routing metadata</td>
+<td align="left">Canonical DAG</td>
+</tr>
+<tr class="even">
+<td align="left">02–03</td>
+<td align="left">Data, metadata and external sources</td>
+<td align="left">Prepared data and routing check</td>
+</tr>
+<tr class="odd">
+<td align="left">04–05</td>
+<td align="left">DAG and item mapping</td>
+<td align="left">Domains, rules and Horn validation</td>
+</tr>
+<tr class="even">
+<td align="left">06</td>
+<td align="left">Prepared data and routing check</td>
+<td align="left">Violation localization</td>
+</tr>
+<tr class="odd">
+<td align="left">07–08</td>
+<td align="left">DAG</td>
+<td align="left">Synthetic data and admissible-pattern count</td>
+</tr>
+<tr class="even">
+<td align="left">09</td>
+<td align="left">Prepared data, routing and semantic-edit metadata</td>
+<td align="left">Extended data and extended DAG</td>
+</tr>
+<tr class="odd">
+<td align="left">10</td>
+<td align="left">Extended data and extended DAG</td>
+<td align="left">Correction of erroneous records</td>
+</tr>
+<tr class="even">
+<td align="left">11</td>
+<td align="left">Correction results and original extended data</td>
+<td align="left">Quality report</td>
+</tr>
+</tbody>
+</table>
+<p>The operational steps are in <code>scripts/</code>.
+<code>00_config.R</code> defines paths and options;
+<code>01_build_DAG.R</code> builds the graph;
+<code>02_prepare_data.R</code> prepares records;
+<code>03_run_routing_check.R</code> checks routing; and
+<code>04_create_VARDOM_and_RULES.R</code> produces constraints.
+<code>05_validate_horn_theory.R</code> and
+<code>06_validate_violation_localization.R</code> perform the
+corresponding validations. <code>09_build_extended_DAG.R</code>,
+<code>10_correct_data.R</code> and
+<code>11_correction_quality_report.R</code> complete the correction and
+assessment workflow. Scripts 07 and 08 respectively generate synthetic
+data and count admissible patterns.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;00_config.R&quot;</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;01_build_DAG.R&quot;</span>))</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;02_prepare_data.R&quot;</span>))</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="st">&quot;scripts&quot;</span>, <span class="st">&quot;03_run_routing_check.R&quot;</span>))</span></code></pre></div>
+<p>Run the steps in order and inspect intermediate outputs before
+starting correction. Metadata quality determines the quality of the
+diagnoses.</p>
+</div>
+<div id="reading-order" class="section level1">
+<h1>Reading order</h1>
+<ol style="list-style-type: decimal">
+<li><a href="metadati-02.html">Metadata and external sources</a>.</li>
+<li><a href="routing-02b.html">Building the routing file</a>: fields,
+types, conditional and unconditional jumps, and OR/XOR groups.</li>
+<li><a href="item-mapping-02c.html">Item mapping</a>: observed codes,
+structural codes, modal positions, jumps, correction and semantic
+predicates.</li>
+<li><a href="dag-03.html">Building the DAG</a> and <a href="controlli-04.html">data preparation and checks</a>.</li>
+<li><a href="regole-05.html">Domains and rules</a>.</li>
+<li><a href="correzione-06.html">Correction</a> and <a href="qualita-correzione-07.html">correction quality</a>.</li>
+</ol>
+<p>Instructions such as <code>source(&quot;scripts/...&quot;)</code> refer to a
+source-project copy containing the required scripts and data. Installing
+the package does not recreate the PROJECT directory. The routing guide
+also contains small examples using <code>SSPICE::build_DAG()</code>
+directly, independently of the application data.</p>
+</div>
+<div id="standalone-first-run" class="section level1">
+<h1>Standalone first run</h1>
+<p>This example needs the installed package only. GATE = 1 skips DETAIL;
+GATE = 2 requires DETAIL. Record 3 deliberately answers a skipped
+question. The first two records are admissible donors. No source files
+are overwritten.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">local</span>({</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  routes <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">text =</span> <span class="fu">paste</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="st">&quot;ID;1;1;9999;0;0;.;.&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="st">&quot;GATE;2;1;2;0;1;1;END&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="st">&quot;DETAIL;2;1;2;0;0;.;.&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="st">&quot;END;1;1;1;0;0;.;.&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>, <span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">na.strings =</span> <span class="st">&quot;.&quot;</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  dag <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">build_DAG</span>(routes, <span class="at">analyze =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  raw <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ID =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">GATE =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>                    <span class="at">DETAIL =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="dv">1</span>, <span class="dv">1</span>), <span class="at">END =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  prepared <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">prepare_data</span>(raw, dag)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="co"># The current checker requires a mapping file, even with no recoding.</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  mapping <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">&quot;.csv&quot;</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">on.exit</span>(<span class="fu">unlink</span>(mapping), <span class="at">add =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="fu">write.csv</span>(<span class="fu">data.frame</span>(<span class="at">varname =</span> <span class="fu">character</span>(), <span class="at">item_route =</span> <span class="fu">numeric</span>(),</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>                       <span class="at">item_dataset =</span> <span class="fu">numeric</span>()), mapping, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>  check <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">routing_check</span>(</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>    prepared<span class="sc">$</span>data, dag<span class="sc">$</span>routes_numeric, dag<span class="sc">$</span>Bt, <span class="st">&quot;ID&quot;</span>,</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>    <span class="fu">basename</span>(mapping), <span class="fu">dirname</span>(mapping)</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  )</span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>  <span class="fu">print</span>(check<span class="sc">$</span>full_report)</span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">setequal</span>(<span class="fu">unique</span>(check<span class="sc">$</span>full_report<span class="sc">$</span>ID), <span class="dv">3</span>))</span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a>  <span class="co"># Only the erroneous row is sent to correction. Donors are fixed.</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>  result <span class="ot">&lt;-</span> SSPICE<span class="sc">::</span><span class="fu">correct_data</span>(</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>    <span class="at">data =</span> prepared<span class="sc">$</span>data[<span class="dv">3</span>, , <span class="at">drop =</span> <span class="cn">FALSE</span>], <span class="at">dag =</span> dag, <span class="at">record_id =</span> <span class="st">&quot;ID&quot;</span>,</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>    <span class="at">donor_data =</span> prepared<span class="sc">$</span>data[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, , <span class="at">drop =</span> <span class="cn">FALSE</span>],</span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>    <span class="at">items_mapping_file =</span> mapping,</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>    <span class="at">control =</span> SSPICE<span class="sc">::</span><span class="fu">correction_control</span>(</span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>      <span class="at">seed =</span> <span class="dv">123</span><span class="dt">L</span>, <span class="at">max_iterations =</span> <span class="dv">20</span><span class="dt">L</span>, <span class="at">use_parallel =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>    )</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a>  )</span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a>  <span class="fu">print</span>(result<span class="sc">$</span>corrected_data)</span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>  <span class="fu">print</span>(result<span class="sc">$</span>record_summary)</span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>  <span class="fu">print</span>(result<span class="sc">$</span>unresolved_records)</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>  <span class="fu">stopifnot</span>(<span class="fu">identical</span>(result<span class="sc">$</span>corrected_data<span class="sc">$</span>ID, prepared<span class="sc">$</span>data<span class="sc">$</span>ID[<span class="dv">3</span>]))</span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a>  <span class="co"># Resolution is read from the final checks, not assumed from termination.</span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>  <span class="fu">print</span>(result<span class="sc">$</span>final_routing_check<span class="sc">$</span>full_report)</span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a>})</span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt;   id_recprd ID errcode varname valname routevar routeval</span></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; 1         3  3       1       3       1        2        1</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt;                                         message varname_label routevar_label</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; 1 value present where a blank value is required        DETAIL           GATE</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; SSPICE correction batch 1/1 completed (1 records).</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt;   ID GATE DETAIL </span><span class="re">END</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; 3  3    1     NA   1</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt;   ID final_routing_violations final_logical_edit_violations</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; 1  3                        0                             0</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt;   final_vaux_violations final_energy resolved</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; 1                     0            4     TRUE</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; [1] ID                            final_routing_violations     </span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; [3] final_logical_edit_violations final_vaux_violations        </span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt; [5] final_energy                  resolved                     </span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; &lt;0 righe&gt; (o 0-length row.names)</span></span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt;  [1] id_recprd      ID             errcode        varname        valname       </span></span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a><span class="co">#&gt;  [6] routevar       routeval       message        varname_label  routevar_label</span></span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a><span class="co">#&gt; &lt;0 righe&gt; (o 0-length row.names)</span></span></code></pre></div>
+<p>The error report should identify record 3. The correction output
+remains in the prepared representation. Inspect
+<code>record_summary$resolved</code> and
+<code>unresolved_records</code>; a stochastic search need not resolve
+every input.</p>
+<p>The full project workflow also includes semantic edits and exogenous
+sources. Its recorded configuration, input files and output directories
+are required to reproduce a run; the small example is not a reproduction
+of the paper.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

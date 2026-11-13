@@ -1,0 +1,182 @@
+---
+title: "06 — Record correction"
+author: "Pierpaolo Massoli"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{06 — Record correction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+> Operational examples assume that the SSPICE project root is the working directory. Operational chunks are not executed when building the vignette because they require the project data. Standalone chunks explicitly marked `eval=TRUE` are exceptions.
+
+# Extended DAG and initial partition
+
+Step 09 inserts logical-edit nodes into the DAG and prepares the corresponding
+data. Step 10 checks the records and partitions them once into `EXACT` and
+`ERRONEOUS` records. Exact records remain unchanged and form the donor pool.
+Correction operates on records that were initially erroneous; a pilot limit
+is applied after partitioning.
+
+```{r correction-steps}
+source(file.path("scripts", "09_build_extended_DAG.R"))
+source(file.path("scripts", "10_correct_data.R"))
+```
+
+# Configuring a pilot
+
+In the project, `correction_strata = "STRATUM"`,
+`correction_record_limit = 100L` and `correction_output_dir` configure the
+example pilot. `correction_control_args` includes temperature, penalties,
+minimum donor counts, seed, `use_parallel` and `parallel_workers`. Set these
+options in `scripts/00_config.R` before Step 10. Parallel work is distributed
+by record; check the effective worker count in the execution summary.
+
+Conditional distributions are precomputed from exact donors by stratum and
+immediate predecessor. Missing predecessors are handled using the appropriate
+pool of exact donors. Distinguish immutable variables (the identifier,
+user-specified variables, and strata when `freeze_strata = TRUE`) from
+variables whose category is locked. An active exogenous auxiliary variable
+retains its original category, whereas an inactive one may become `NA`.
+Logical groups have their own structural treatment; they are not generally
+synonymous with immutable columns.
+
+# Correction with mapped categories
+
+Supply the same `items_mapping_file` used for checking and export. Mapped
+variable domains and proposed values use observed dataset codes; the engine
+translates them when evaluating modal positions and jumps. Custom `domains`
+and `imputation_priors` for these variables must also use observed codes.
+Keep donor records in the same coding as the records to be corrected.
+
+The [Item mapping](item-mapping-02c.html) guide demonstrates correction with
+an irregularly coded variable held fixed. The mapping regression suite also
+tests filling a mapped variable while preserving its observed-code domain.
+VAUX/LEDIT predicates continue to refer to observed values.
+
+# Outputs and diagnosis
+
+Step 10 saves `correction_result.rds`, `corrected_questionnaire_data.rds` and
+CSV summaries in the configured directory. Distinguish corrected records from
+unresolved records and retain their link to the original row and identifier.
+Persistent logical-edit violations require diagnosis and appear in the quality
+assessment.
+
+# Full runs, batches and workers
+
+The example below uses the original extended inputs, not a dataset corrected
+by an earlier run. Execute it from the PROJECT root after the required steps.
+Use an output directory distinct from those of other experiments.
+
+```{r full-run, eval=FALSE}
+run <- new.env(parent = globalenv())
+sys.source("scripts/00_config.R", envir = run)
+run$config$correction_record_limit <- Inf
+run$config$correction_strata <- "STRATUM"
+run$config$correction_batch_size <- 100L
+run$config$correction_resume_batches <- FALSE
+run$config$correction_cache_policy <- "auto"
+run$config$correction_control_args$freeze_strata <- TRUE
+run$config$correction_control_args$use_parallel <- TRUE
+run$config$correction_control_args$parallel_workers <- 6L
+run$config$correction_output_dir <- "output/corrected-full-STRATUM"
+stopifnot(!dir.exists(run$config$correction_output_dir))
+sys.source("scripts/10_correct_data.R", envir = run)
+```
+
+`Inf` selects all initially erroneous records. Initially exact records remain
+donors and must not be corrected again. A batch of 100 is the checkpoint unit;
+parallel work is distributed by record. The batch message appears on
+completion, not at startup. Before the first message, processing may include
+reading inputs, the initial check, donor preparation, worker startup and
+correction of the first batch.
+
+The initial routing-check cache and batch checkpoints are separate.
+`correction_cache_policy = "auto"` allows reuse of a valid initial check; it
+does not mean reusing a previous correction. To resume interrupted batches,
+use the same directory and `correction_resume_batches = TRUE`, keeping inputs
+and settings compatible. Do not enable resumption to compare FPROV and STRATUM
+in the same directory. Always inspect the cache reason, reused-batch count and
+effective worker count in the summary.
+
+To freeze FPROV as well when STRATUM is the stratification variable, include
+it explicitly in `correction_immutable_variables`. A variable's statistical
+role is separate from its immutable status. For a comparison that isolates
+the effect of stratification alone, keep the set of immutable variables the
+same in both runs.
+
+<!-- SSPICE-STRATUM-CODES-BEGIN -->
+## Territorial stratum codes
+
+In the supplied example, STRATUM identifies five geographical
+divisions of Italy: North-West (1), North-East (2), Centre (3),
+South (4), and Islands (5). It is used for stratification during
+correction. With freeze_strata = TRUE, stratum membership remains
+unchanged.
+<!-- SSPICE-STRATUM-CODES-END -->
+
+<!-- SSPICE-STARTUP-NOTE-BEGIN -->
+## Preparation before the first batch
+
+Before record correction begins, SSPICE prepares or reuses
+conditional distributions, donor information, variable domains
+and other supporting structures. Parallel execution also requires
+worker initialization. Step 10 performs an initial routing check
+unless a valid cached result is available.
+
+Preparation time depends on the number of variables and records,
+the number of categories and strata, and the routing structure.
+Computing conditional distributions can take appreciable time
+before the first batch starts.
+
+The first batch-completion message appears only after preparation
+and processing of that batch. A delay before this message does not
+by itself indicate that execution has stalled.
+
+Distinguish total script elapsed time from the correction time
+reported in the output. Their difference is not a complete measure
+of initialization time, because some preparation may occur within
+the timed correction call. Measuring individual preparation stages
+requires separate timing.
+<!-- SSPICE-STARTUP-NOTE-END -->
+
+# Controls and returned objects
+
+| Control | Default and meaning |
+|:--|:--|
+| `max_iterations = NULL` | One iteration per DAG node as the record-specific maximum; termination may occur sooner |
+| `initial_temperature = NULL` | Maximum of the final temperature, the floored initial constraint score, and `lambda_change * max(penalty_fill, penalty_blank, penalty_flip)` |
+| `final_temperature = 1e-4` | Positive temperature used after cooling |
+| `cooling_fraction = 0.9` | Fraction of iterations used for linear cooling |
+| `use_parallel = FALSE` | Sequential execution unless explicitly enabled |
+| `parallel_workers = NULL` | Automatic worker choice when parallel execution is enabled, capped by record count |
+| `beta_fill = 1` | Retained compatibility control; stored and validated but not consumed by the supplied proposal code |
+
+`beta_fill` is retained for compatibility; changing it does not alter proposals
+in this source version.
+
+The default maximum iteration count is a computational budget, not a guarantee
+of feasibility or global minimum change. Increasing it can increase run time.
+Keep diagnostic weights positive when interpreting zero weighted violations
+as logical feasibility; zero weights can hide their corresponding terms.
+
+`correct_data()` returns a list with class `sspice_correction_result`:
+
+| Component | Use |
+|:--|:--|
+| `corrected_data` | Corrected rows in the prepared representation |
+| `record_summary` | Per-record status and diagnostics; inspect `resolved` |
+| `unresolved_records` | Subset of the summary for unresolved records |
+| `final_routing_check` | Final record/variable violation reports |
+| `donor_diagnostics` | Counts of supplied and retained donors |
+| `control`, `strata`, `immutable_variables` | Effective correction settings |
+| `parallel`, `batch_manifest` | Workers, batches and checkpoint reuse |
+
+Step 10 performs the initial EXACT/ERRONEOUS split and applies the pilot limit.
+Calling `correct_data()` directly does not reproduce that script-level
+selection automatically. Its `corrected_data` corresponds to the rows passed
+to the function; Step 10 writes the reconstructed questionnaire output.

@@ -1,0 +1,69 @@
+---
+title: "03 — Building and analysing the DAG"
+author: "Pierpaolo Massoli"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{03 — Building and analysing the DAG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", eval = FALSE)
+```
+
+> Operational examples assume that the SSPICE project root is the working directory. Operational chunks are not executed when building the vignette because they require the project data. Standalone chunks explicitly marked `eval=TRUE` are exceptions.
+
+# From routing metadata to a graph
+
+`build_DAG()` reads routing metadata and produces the canonical DAG.
+`stop_on_cycle = TRUE` prevents processing from continuing with cyclic
+dependencies; `analyze = TRUE` computes structural diagnostics. The project
+script also saves the adjacency matrix, transposed incidence matrix, numeric
+routing table and graph partitions.
+
+```{r build-dag}
+source(file.path("scripts", "00_config.R"))
+dag <- SSPICE::build_DAG(
+  routing = config$routing_file,
+  separator = config$metadata_separator,
+  na_strings = config$missing_codes,
+  analyze = TRUE,
+  stop_on_cycle = TRUE,
+  max_paths_per_partition = config$max_paths_per_partition
+)
+names(dag)
+dag$graph_diagnostics
+```
+
+# What to inspect
+
+Nodes represent variables and logical groups; edges represent path
+prerequisites. Inspect sources, isolated nodes, partitions and path lengths
+before attributing routing anomalies to the data. OR and XOR groups are
+represented by canonical VOR and VXOR variables. An acyclic graph allows
+dependencies to be evaluated in a consistent order.
+
+```{r inspect-dag}
+source(file.path("scripts", "01_build_DAG.R"))
+dag <- readRDS(file.path(config$dag_output_dir, "questionnaire_DAG.rds"))
+str(dag$graph_diagnostics, max.level = 1)
+utils::head(dag$routes_numeric)
+```
+
+If construction fails, correct the metadata and rebuild the DAG before reusing
+derived results. The DAG extended with logical edits is built separately in
+Step 09.
+
+# Checking the meaning of the graph
+
+Read [Building the routing file](routing-02b.html) before constructing the
+graph. Canonical nodes can replace several original variables: VOR and VXOR
+are not simple renamings. In particular, check that jump targets still exist
+after grouping.
+
+An acyclic DAG can still contain incorrectly specified domains, jumps or
+groups. Inspect `routes_original`, `routes_grouped`, `routes_numeric` and `Bt`,
+and check expected paths on small examples. An isolated node may indicate a
+question excluded by an unconditional jump or a metadata error; do not remove
+it automatically without interpreting its role.
